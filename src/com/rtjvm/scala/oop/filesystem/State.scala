@@ -5,7 +5,7 @@ import com.rtjvm.scala.oop.files.Directory
 class State(val root: Directory, val workingDirectory: Directory, val output: String) {
 
   // Prints the Output/ message and the Shell Token
-  def show() : Unit = {
+  def show(): Unit = {
     println(output)
     print(State.SHELL_TOKEN)
   }

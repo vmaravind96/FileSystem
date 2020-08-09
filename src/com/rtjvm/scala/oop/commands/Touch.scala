@@ -1,4 +1,5 @@
 package com.rtjvm.scala.oop.commands
+
 import com.rtjvm.scala.oop.files.{DirEntry, File}
 import com.rtjvm.scala.oop.filesystem.State
 

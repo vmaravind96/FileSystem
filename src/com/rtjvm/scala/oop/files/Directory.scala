@@ -4,7 +4,7 @@ import com.rtjvm.scala.oop.filesystem.FileSystemException
 
 import scala.annotation.tailrec
 
-class Directory(override val parentPath: String, override val name: String, val contents : List[DirEntry])
+class Directory(override val parentPath: String, override val name: String, val contents: List[DirEntry])
   extends DirEntry(parentPath, name) {
 
   override def asDirectory: Directory = this
@@ -24,7 +24,7 @@ class Directory(override val parentPath: String, override val name: String, val 
   }
 
   // Return all the folders that are in the current path (Working Dir)
-  def getAllFoldersInPath : List[String] = {
+  def getAllFoldersInPath: List[String] = {
     // Eg: /home/apple/repo/ => List("home", "apple", "repo")
     // Note : Here "path" is the method DirEntry.
     path.substring(1).split(Directory.SEPARATOR).toList.filter(x => !x.isEmpty)
@@ -34,8 +34,20 @@ class Directory(override val parentPath: String, override val name: String, val 
   def findDescendant(path: List[String]): Directory = {
     // Eg : /home/apple/repo and Path("home" , "apple")
     // Returns Apple Directory Entry
-    if (path.isEmpty) this
-    else findEntry(path.head).asDirectory.findDescendant(path.tail)
+    if (path.isEmpty) {
+      this
+    } else {
+      findEntry(path.head).asDirectory.findDescendant(path.tail)
+    }
+  }
+
+  // Overload Find Descendant with relative path
+  def findDescendant(relativePath: String): Directory = {
+    if (relativePath.isEmpty) {
+      this
+    } else {
+      findDescendant(relativePath.split(Directory.SEPARATOR).toList)
+    }
   }
 
   // Add a new DirEntry to current content list
@@ -44,24 +56,40 @@ class Directory(override val parentPath: String, override val name: String, val 
   }
 
   // Finds an entry in the working directory with name specified
-  def findEntry(entryName: String) : DirEntry = {
+  def findEntry(entryName: String): DirEntry = {
     @tailrec
     def findEntryHelper(entryName: String, contentList: List[DirEntry]): DirEntry = {
-      if (contentList.isEmpty) null
-      else if (contentList.head.name.equals(entryName)) contentList.head
-      else findEntryHelper(entryName, contentList.tail)
+      if (contentList.isEmpty) {
+        null
+      } else if (contentList.head.name.equals(entryName)) {
+        contentList.head
+      } else {
+        findEntryHelper(entryName, contentList.tail)
+      }
     }
+
     findEntryHelper(entryName, contents)
   }
 
   // Replace Old Entry with new Entry
-  def replaceEntry(oldName : String, newEntry: DirEntry): Directory = {
-    new Directory(parentPath, name,
-      contents.filter(entry => !entry.name.equals(oldName)) :+ newEntry)
+  def replaceEntry(oldName: String, newEntry: DirEntry): Directory = {
+    new Directory(
+      parentPath, name,
+      contents.filter(entry => !entry.name.equals(oldName)) :+ newEntry
+    )
   }
 
   // Check if directory is root
   def isRoot: Boolean = parentPath.isEmpty
+
+  // Remove Entry
+  def removeEntry(entryName: String): Directory = {
+    if (!hasEntry(entryName)) {
+      this
+    } else {
+      new Directory(parentPath, name, contents.filter(x => x.name != entryName))
+    }
+  }
 
 }
 
@@ -70,7 +98,7 @@ object Directory {
   val ROOT_PATH = "/"
 
   // Utility to create a new directory
-  def empty(parentPath: String, name : String): Directory = {
+  def empty(parentPath: String, name: String): Directory = {
     new Directory(parentPath, name, List())
   }
 
