@@ -12,6 +12,7 @@ object Command {
   val LS = "ls"
   val PWD = "pwd"
   val TOUCH = "touch"
+  val CD = "cd"
 
   // Gets the Command from the User and process it
   def from(input: String): Command = {
@@ -23,10 +24,12 @@ object Command {
         else new MkDir(tokens(1))
       case LS => new Ls
       case PWD => new Pwd
-      case TOUCH => {
+      case TOUCH =>
         if (tokens.length < 2) incompleteCommand(TOUCH)
         else new Touch(tokens(1))
-      }
+      case CD =>
+        if (tokens.length < 2) incompleteCommand(CD)
+        else new Cd(tokens(1))
       case _ => new UnknownCommand
     }
   }

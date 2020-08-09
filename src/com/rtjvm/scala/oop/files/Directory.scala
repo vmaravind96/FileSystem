@@ -14,6 +14,10 @@ class Directory(override val parentPath: String, override val name: String, val 
 
   override def getType: String = "Directory"
 
+  override def isDirectory: Boolean = true
+
+  override def isFile: Boolean = false
+
   // Check if the Working Directory has an entry with name as specified
   def hasEntry(entryName: String): Boolean = {
     findEntry(entryName) != null
@@ -55,6 +59,9 @@ class Directory(override val parentPath: String, override val name: String, val 
     new Directory(parentPath, name,
       contents.filter(entry => !entry.name.equals(oldName)) :+ newEntry)
   }
+
+  // Check if directory is root
+  def isRoot: Boolean = parentPath.isEmpty
 
 }
 
